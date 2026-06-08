@@ -1,7 +1,9 @@
 import pandas as pd
+import numpy as np
 
 
 class ModeloTabular:
+
     def __init__(self):
         self.df = None
         self.ruta_archivo = None
@@ -32,7 +34,12 @@ class ModeloTabular:
             filas.append({
                 "columna": col,
                 "no_nulos": self.df[col].notnull().sum(),
-                "tipo_dato": str(self.df[col].dtype)
+                "nulos": self.df[col].isnull().sum(),
+                "porcentaje_nulos": round(
+                    self.df[col].isnull().sum() / len(self.df) * 100, 1
+                ),
+                "tipo_dato": str(self.df[col].dtype),
+                "unicos": self.df[col].nunique()
             })
 
         return pd.DataFrame(filas)
@@ -41,16 +48,26 @@ class ModeloTabular:
         if self.df is None:
             return pd.DataFrame()
 
-        return self.df.describe(include="all").fillna("")
+        numericas = self.df.select_dtypes(include=[np.number])
+        if numericas.empty:
+            return self.df.describe(include="all").fillna("")
+
+        desc = numericas.describe().T
+        desc["rango"] = desc["max"] - desc["min"]
+        desc["IQR"] = desc["75%"] - desc["25%"]
+        desc["var"] = numericas.var()
+
+        columnas_orden = ["count", "mean", "std", "var", "min",
+                          "25%", "50%", "75%", "max", "rango", "IQR"]
+        disponibles = [c for c in columnas_orden if c in desc.columns]
+        return desc[disponibles].fillna("")
 
     def obtener_datos_columnas(self, columnas):
         if self.df is None:
             return pd.DataFrame()
-
         return self.df[columnas]
 
     def obtener_datos_scatter(self, columna_x, columna_y):
         if self.df is None:
             return None, None
-
         return self.df[columna_x], self.df[columna_y]
