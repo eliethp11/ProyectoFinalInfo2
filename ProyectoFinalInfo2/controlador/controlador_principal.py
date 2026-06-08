@@ -50,8 +50,8 @@ class ControladorPrincipal:
     def login_exitoso(self, usuario):
         self.usuario_actual = usuario
         self.vista_login.close()
-        self.abrir_captura_foto()
         self.vista_principal.show()
+        self.abrir_captura_foto()
 
     def abrir_captura_foto(self):
         self.controlador_camara.capturar_foto_usuario(self.usuario_actual, self.vista_principal)
