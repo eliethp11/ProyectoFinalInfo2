@@ -1,7 +1,7 @@
 from pymongo import MongoClient
 class ModeloAutenticacion:
     def __init__(self):
-        self.cliente = MongoClient("mongodb://localhost:27017/")
+        self.cliente = MongoClient("mongodb+srv://biocore_user:bio2026@biocorenexus.hvmx8zp.mongodb.net/?appName=BioCoreNexus")
         self.db = self.cliente["biocore_nexus"]
         self.coleccion_usuarios = self.db["users"]
         self._insertar_usuarios_semilla()
