@@ -1,22 +1,25 @@
 import os
-import matplotlib.pyplot as plt
-
+import numpy as np
 from PyQt5.QtWidgets import (
     QFileDialog,
     QListWidgetItem,
     QMessageBox,
-    QTableWidgetItem
+    QTableWidgetItem,
+    QHeaderView,
+    QMainWindow
 )
-
+from PyQt5.QtGui import QColor
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
 from vista.vista_tablas import VistaTablas
 from modelo.modelo_tabular import ModeloTabular
 
 
 class ControladorTablas:
+
     def __init__(self):
         self.vista = VistaTablas()
         self.modelo = ModeloTabular()
-
         self.conectar_eventos()
 
     def conectar_eventos(self):
@@ -57,10 +60,8 @@ class ControladorTablas:
 
     def cargar_combos(self):
         columnas = self.modelo.obtener_columnas()
-
         self.vista.combo_x.clear()
         self.vista.combo_y.clear()
-
         self.vista.combo_x.addItems(columnas)
         self.vista.combo_y.addItems(columnas)
 
@@ -70,62 +71,84 @@ class ControladorTablas:
 
         self.vista.tabla_resumen.clear()
 
-        columnas_describe = len(describe_df.columns) + 1 if not describe_df.empty else 3
-        columnas_max = max(3, columnas_describe)
-
         total_filas = 0
+        encabezados_info = list(info_df.columns)
         total_filas += 1
         total_filas += 1
         total_filas += len(info_df)
         total_filas += 1
         total_filas += 1
+        encabezados_desc = list(describe_df.columns)
         total_filas += 1
         total_filas += len(describe_df)
 
+        columnas_max = max(len(encabezados_info), len(encabezados_desc), 3)
         self.vista.tabla_resumen.setRowCount(total_filas)
         self.vista.tabla_resumen.setColumnCount(columnas_max)
 
-        encabezados = ["Campo", "Valor 1", "Valor 2"]
-        while len(encabezados) < columnas_max:
-            encabezados.append(f"Valor {len(encabezados)}")
-
-        self.vista.tabla_resumen.setHorizontalHeaderLabels(encabezados)
+        encabezados_tabla = ["Campo"]
+        for i in range(1, columnas_max):
+            encabezados_tabla.append("Col " + str(i))
+        self.vista.tabla_resumen.setHorizontalHeaderLabels(encabezados_tabla)
 
         fila = 0
 
         self.vista.tabla_resumen.setItem(fila, 0, QTableWidgetItem("INFO()"))
+        for c in range(columnas_max):
+            item = self.vista.tabla_resumen.item(fila, c)
+            if item:
+                item.setBackground(QColor("#1565C0"))
+                item.setForeground(QColor("white"))
         fila += 1
 
-        self.vista.tabla_resumen.setItem(fila, 0, QTableWidgetItem("columna"))
-        self.vista.tabla_resumen.setItem(fila, 1, QTableWidgetItem("no_nulos"))
-        self.vista.tabla_resumen.setItem(fila, 2, QTableWidgetItem("tipo_dato"))
+        for j, nombre in enumerate(encabezados_info):
+            self.vista.tabla_resumen.setItem(fila, j, QTableWidgetItem(nombre))
+            item = self.vista.tabla_resumen.item(fila, j)
+            if item:
+                item.setBackground(QColor("#BBDEFB"))
+                item.setForeground(QColor("#0D47A1"))
         fila += 1
 
         for _, row in info_df.iterrows():
-            self.vista.tabla_resumen.setItem(fila, 0, QTableWidgetItem(str(row["columna"])))
-            self.vista.tabla_resumen.setItem(fila, 1, QTableWidgetItem(str(row["no_nulos"])))
-            self.vista.tabla_resumen.setItem(fila, 2, QTableWidgetItem(str(row["tipo_dato"])))
+            for j, nombre in enumerate(encabezados_info):
+                valor = str(row[nombre]) if nombre in row else ""
+                self.vista.tabla_resumen.setItem(fila, j, QTableWidgetItem(valor))
+                item = self.vista.tabla_resumen.item(fila, j)
+                if item:
+                    item.setBackground(QColor("#E3F2FD"))
             fila += 1
 
         self.vista.tabla_resumen.setItem(fila, 0, QTableWidgetItem(""))
         fila += 1
 
         self.vista.tabla_resumen.setItem(fila, 0, QTableWidgetItem("DESCRIBE()"))
+        for c in range(columnas_max):
+            item = self.vista.tabla_resumen.item(fila, c)
+            if item:
+                item.setBackground(QColor("#2E7D32"))
+                item.setForeground(QColor("white"))
         fila += 1
 
-        headers_describe = ["estadistico"] + list(describe_df.columns)
-        for j, nombre in enumerate(headers_describe):
-            if j < columnas_max:
-                self.vista.tabla_resumen.setItem(fila, j, QTableWidgetItem(nombre))
+        for j, nombre in enumerate(encabezados_desc):
+            self.vista.tabla_resumen.setItem(fila, j, QTableWidgetItem(nombre))
+            item = self.vista.tabla_resumen.item(fila, j)
+            if item:
+                item.setBackground(QColor("#C8E6C9"))
+                item.setForeground(QColor("#1B5E20"))
         fila += 1
 
         for _, row in describe_df.iterrows():
             self.vista.tabla_resumen.setItem(fila, 0, QTableWidgetItem(str(row.name)))
             for j, valor in enumerate(row.values, start=1):
-                self.vista.tabla_resumen.setItem(fila, j, QTableWidgetItem(str(valor)))
+                if j < columnas_max:
+                    self.vista.tabla_resumen.setItem(fila, j, QTableWidgetItem(str(valor)))
+                    item = self.vista.tabla_resumen.item(fila, j)
+                    if item:
+                        item.setBackground(QColor("#E8F5E9"))
             fila += 1
 
-        self.vista.tabla_resumen.resizeColumnsToContents()
+        header = self.vista.tabla_resumen.horizontalHeader()
+        header.setSectionResizeMode(QHeaderView.Stretch)
 
     def graficar_columnas(self):
         items = self.vista.lista_columnas.selectedItems()
@@ -142,9 +165,32 @@ class ControladorTablas:
 
         try:
             df = self.modelo.obtener_datos_columnas(columnas)
-            df.plot(subplots=True, figsize=(8, 6), title=columnas)
-            plt.tight_layout()
-            plt.show()
+
+            fig = Figure(figsize=(8, 6))
+            canvas = FigureCanvas(fig)
+            axes = fig.subplots(len(columnas), 1, sharex=True)
+
+            if len(columnas) == 1:
+                axes = [axes]
+
+            colores = ['#2196F3', '#FF5722', '#4CAF50', '#FFC107',
+                       '#9C27B0', '#00BCD4', '#E91E63', '#795548']
+
+            for i, col in enumerate(columnas):
+                ax = axes[i]
+                datos_col = df[col].dropna()
+                ax.plot(datos_col.values, color=colores[i % len(colores)],
+                        linewidth=0.8)
+                ax.set_title(col)
+                ax.grid(True, alpha=0.3)
+
+            fig.tight_layout()
+
+            ventana_grafica = QMainWindow()
+            ventana_grafica.setWindowTitle("Grafico de Columnas")
+            ventana_grafica.setCentralWidget(canvas)
+            ventana_grafica.resize(800, 600)
+            ventana_grafica.show()
         except Exception as e:
             QMessageBox.critical(self.vista, "Error", str(e))
 
@@ -163,12 +209,20 @@ class ControladorTablas:
         try:
             x, y = self.modelo.obtener_datos_scatter(columna_x, columna_y)
 
-            plt.figure(figsize=(6, 5))
-            plt.scatter(x, y)
-            plt.xlabel(columna_x)
-            plt.ylabel(columna_y)
-            plt.title(f"Scatter: {columna_x} vs {columna_y}")
-            plt.tight_layout()
-            plt.show()
+            fig = Figure(figsize=(6, 5))
+            canvas = FigureCanvas(fig)
+            ax = fig.add_subplot(111)
+            ax.scatter(x, y, alpha=0.5, color='#2196F3')
+            ax.set_xlabel(columna_x)
+            ax.set_ylabel(columna_y)
+            ax.set_title(columna_x + " vs " + columna_y)
+            ax.grid(True, alpha=0.3)
+            fig.tight_layout()
+
+            ventana_grafica = QMainWindow()
+            ventana_grafica.setWindowTitle("Scatter Plot")
+            ventana_grafica.setCentralWidget(canvas)
+            ventana_grafica.resize(600, 500)
+            ventana_grafica.show()
         except Exception as e:
             QMessageBox.critical(self.vista, "Error", str(e))
