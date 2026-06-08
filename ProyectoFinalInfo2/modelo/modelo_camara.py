@@ -1,6 +1,6 @@
 import os
 import cv2
-import sqlite3
+from pymongo import MongoClient
 from datetime import datetime
 
 
@@ -12,24 +12,10 @@ class ModeloCamara:
         os.makedirs("datos", exist_ok=True)
         os.makedirs(self.carpeta_fotos, exist_ok=True)
 
-        self.inicializar_bd()
-
-    def inicializar_bd(self):
-        conexion = sqlite3.connect(self.base_datos)
-        cursor = conexion.cursor()
-
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS sesiones_fotos (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                id_usuario INTEGER NOT NULL,
-                ruta_foto TEXT NOT NULL,
-                fecha_sesion TEXT NOT NULL
-            )
-        """)
-
-        conexion.commit()
-        conexion.close()
-
+        cliente = MongoClient("mongodb+srv://biocore_user:bio2026@biocorenexus.hvmx8zp.mongodb.net/?appName=BioCoreNexus")
+        self.db = cliente["biocore_nexus"]
+        self.coleccion_sesiones = self.db["sesiones"]
+    
     def capturar_foto(self, id_usuario):
         camara = cv2.VideoCapture(0)
 
@@ -80,15 +66,11 @@ class ModeloCamara:
         return None
 
     def guardar_registro_foto(self, id_usuario, ruta_foto):
-        conexion = sqlite3.connect(self.base_datos)
-        cursor = conexion.cursor()
-
-        fecha_sesion = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-        cursor.execute("""
-            INSERT INTO sesiones_fotos (id_usuario, ruta_foto, fecha_sesion)
-            VALUES (?, ?, ?)
-        """, (id_usuario, ruta_foto, fecha_sesion))
-
-        conexion.commit()
-        conexion.close()
+    
+        registro = {
+            "id_usuario": id_usuario,
+            "ruta_foto": ruta_foto,
+            "fecha_captura": datetime.now()
+        }
+        self.coleccion_sesiones.insert_one(registro)
+        print(f"[+] Sesión guardada en Base de Datos para usuario {id_usuario}")
