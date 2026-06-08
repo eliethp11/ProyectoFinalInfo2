@@ -50,8 +50,12 @@ class ControladorPrincipal:
     def login_exitoso(self, usuario):
         self.usuario_actual = usuario
         self.vista_login.close()
+        self.abrir_captura_foto()
         self.vista_principal.show()
 
+    def abrir_captura_foto(self):
+        self.controlador_camara.capturar_foto(self.usuario_actual, self.vista_principal)
+        
     def abrir_modulo_imagenes(self):
         QMessageBox.information(
             self.vista_principal,
