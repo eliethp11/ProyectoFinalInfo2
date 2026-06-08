@@ -54,7 +54,7 @@ class ControladorPrincipal:
         self.vista_principal.show()
 
     def abrir_captura_foto(self):
-        self.controlador_camara.capturar_foto(self.usuario_actual, self.vista_principal)
+        self.controlador_camara.capturar_foto_usuario(self.usuario_actual, self.vista_principal)
         
     def abrir_modulo_imagenes(self):
         QMessageBox.information(
