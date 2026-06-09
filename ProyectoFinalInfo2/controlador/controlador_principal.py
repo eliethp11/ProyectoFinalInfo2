@@ -1,8 +1,10 @@
+from ProyectoFinalInfo2.modelo import modelo_dicom
 from controlador.controlador_camara import ControladorCamara
 from controlador.controlador_tablas import ControladorTablas
 from PyQt5.QtWidgets import QMessageBox
 from vista.vista_login import VistaLogin
 from controlador.controlador_autenticacion import ControladorAutenticacion
+from controlador.controlador_senales import ControladorSenales
 
 
 class ControladorPrincipal:
@@ -11,7 +13,8 @@ class ControladorPrincipal:
         self.vista_login = VistaLogin()
         self.usuario_actual = None
         self.controlador_tablas = ControladorTablas()
-
+        self.controlador_senales = ControladorSenales()
+    
         self.controlador_autenticacion = ControladorAutenticacion(
             self.vista_login,
             self
@@ -51,20 +54,19 @@ class ControladorPrincipal:
         self.usuario_actual = usuario
         self.vista_login.close()
         self.vista_principal.show()
+        self.abrir_captura_foto()
 
+    def abrir_captura_foto(self):
+        self.controlador_camara.capturar_foto_usuario(self.usuario_actual, self.vista_principal)
+        
     def abrir_modulo_imagenes(self):
-        QMessageBox.information(
-            self.vista_principal,
-            "Módulo de Imágenes",
-            "Aquí irá el módulo de procesamiento de imágenes médicas."
-        )
-
+            QMessageBox.information(
+        self.vista_principal,
+        "Modulo de Imagenes",
+        "Modulo en construccion."
+    )
     def abrir_modulo_senales(self):
-        QMessageBox.information(
-            self.vista_principal,
-            "Módulo de Señales",
-            "Aquí irá el módulo de procesamiento de señales biomédicas."
-        )
+        self.controlador_senales.mostrar_vista()
 
     def abrir_modulo_tablas(self):
         self.controlador_tablas.mostrar()
