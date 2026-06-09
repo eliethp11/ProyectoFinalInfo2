@@ -66,7 +66,7 @@ class ControladorPrincipal:
         )
 
     def abrir_modulo_senales(self):
-        self.controlador_senales.mostrar()
+        self.controlador_senales.mostrar_vista()
 
     def abrir_modulo_tablas(self):
         self.controlador_tablas.mostrar()
