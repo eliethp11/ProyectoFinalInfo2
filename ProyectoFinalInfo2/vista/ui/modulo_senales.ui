@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1200</width>
+    <height>800</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Modulo de Senales Biomedicas</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout">
+   <item>
+    <layout class="QVBoxLayout" name="panel_izquierdo">
+     <item>
+      <widget class="QGroupBox" name="grupo_carga">
+       <property name="title">
+        <string>Cargar Archivo .mat</string>
+       </property>
+       <layout class="QVBoxLayout" name="layout_carga">
+        <item>
+         <widget class="QPushButton" name="btn_cargar_mat">
+          <property name="text">
+           <string>Seleccionar archivo .mat</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="lbl_info_senal">
+          <property name="text">
+           <string>Sin datos cargados</string>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="grupo_canales">
+       <property name="title">
+        <string>Seleccion de Canales</string>
+       </property>
+       <layout class="QFormLayout" name="layout_canales">
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_inicio">
+          <property name="text">
+           <string>Canal inicio:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QSpinBox" name="spin_canal_inicio">
+          <property name="minimum">
+           <number>0</number>
+          </property>
+          <property name="maximum">
+           <number>0</number>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_fin">
+          <property name="text">
+           <string>Canal fin:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QSpinBox" name="spin_canal_fin">
+          <property name="minimum">
+           <number>0</number>
+          </property>
+          <property name="maximum">
+           <number>0</number>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0" colspan="2">
+         <widget class="QPushButton" name="btn_mostrar_canales">
+          <property name="text">
+           <string>Mostrar Canales</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="grupo_ruido">
+       <property name="title">
+        <string>Aplicar Ruido</string>
+       </property>
+       <layout class="QFormLayout" name="layout_ruido">
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_canal_ruido">
+          <property name="text">
+           <string>Canal:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QSpinBox" name="spin_canal_ruido">
+          <property name="minimum">
+           <number>0</number>
+          </property>
+          <property name="maximum">
+           <number>0</number>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_tipo_ruido">
+          <property name="text">
+           <string>Tipo:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QComboBox" name="combo_tipo_ruido">
+          <item>
+           <property name="text">
+            <string>Gaussiano</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Impulso (Salt &amp; Pepper)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Uniforme</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_nivel_ruido">
+          <property name="text">
+           <string>Nivel:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QDoubleSpinBox" name="spin_nivel_ruido">
+          <property name="minimum">
+           <double>0.010000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>100.000000000000000</double>
+          </property>
+          <property name="value">
+           <double>1.000000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0" colspan="2">
+         <widget class="QPushButton" name="btn_aplicar_ruido">
+          <property name="text">
+           <string>Aplicar Ruido</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0" colspan="2">
+         <widget class="QPushButton" name="btn_comparar_ruido">
+          <property name="text">
+           <string>Comparar Original vs Ruido</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0" colspan="2">
+         <widget class="QPushButton" name="btn_restaurar">
+          <property name="text">
+           <string>Restaurar Original</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="grupo_estadisticas">
+       <property name="title">
+        <string>Estadisticas por Eje</string>
+       </property>
+       <layout class="QVBoxLayout" name="layout_estadisticas">
+        <item>
+         <widget class="QRadioButton" name="radio_eje_0">
+          <property name="text">
+           <string>Eje 0 (por canal)</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="radio_eje_1">
+          <property name="text">
+           <string>Eje 1 (por muestra)</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btn_calcular_estadisticas">
+          <property name="text">
+           <string>Calcular Promedio y Desv. Estandar</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QVBoxLayout" name="panel_derecho">
+     <item>
+      <widget class="QLabel" name="label_canvas">
+       <property name="text">
+        <string>Visualizacion de Senales</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QWidget" name="contenedor_canvas" native="true">
+       <property name="minimumSize">
+        <size>
+         <width>700</width>
+         <height>500</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
