@@ -3,6 +3,7 @@ from controlador.controlador_tablas import ControladorTablas
 from PyQt5.QtWidgets import QMessageBox
 from vista.vista_login import VistaLogin
 from controlador.controlador_autenticacion import ControladorAutenticacion
+from controlador.controlador_senales import ControladorSenales
 
 
 class ControladorPrincipal:
@@ -11,6 +12,7 @@ class ControladorPrincipal:
         self.vista_login = VistaLogin()
         self.usuario_actual = None
         self.controlador_tablas = ControladorTablas()
+        self.controlador_senales = ControladorSenales()
 
         self.controlador_autenticacion = ControladorAutenticacion(
             self.vista_login,
@@ -64,11 +66,7 @@ class ControladorPrincipal:
         )
 
     def abrir_modulo_senales(self):
-        QMessageBox.information(
-            self.vista_principal,
-            "Módulo de Señales",
-            "Aquí irá el módulo de procesamiento de señales biomédicas."
-        )
+        self.controlador_senales.mostrar()
 
     def abrir_modulo_tablas(self):
         self.controlador_tablas.mostrar()
