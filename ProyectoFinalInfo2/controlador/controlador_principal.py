@@ -1,4 +1,4 @@
-from ProyectoFinalInfo2.modelo import modelo_dicom
+
 from controlador.controlador_camara import ControladorCamara
 from controlador.controlador_tablas import ControladorTablas
 from PyQt5.QtWidgets import QMessageBox
